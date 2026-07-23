@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MẬT THƯ ONLINE SỐ 2</title>
+    <link rel="icon" href="img/icon.png" type="image/png">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <main id="main-wrapper">
+        <div id="game-header">
+            <h2 class="game-title">📜 MẬT THƯ ONLINE SỐ 2</h2>
+            <div class="header-info">
+                <span class="info-item">
+                    <span class="icon">🏆</span> 
+                    Kỷ lục: <strong id="high-score">0</strong>
+                </span>
+                <span class="info-item">
+                    <span class="icon">⚡</span> 
+                    Cách chơi: <strong>Chạm / Space</strong>
+                </span>
+                <span class="info-item">
+                    <span class="icon">💡</span> 
+                    Mục tiêu: <strong>Thu thập manh mối theo từng mốc điểm</strong>
+            </div>
+        </div>
+
+        <!-- 3. KHUNG GAME CHÍNH (GIỮ NGUYÊN HOÀN TOÀN NHƯ BAN ĐẦU) -->
+        <div id="game-container">
+            <canvas id="gameCanvas" width="800" height="250"></canvas>
+            
+            <!-- Điểm số trả lại góc trên bên phải canvas -->
+            <div id="score">Điểm: 0</div>
+            
+            <div id="game-over" class="hidden">
+                <h2>LÊU LÊU CÒN NON LẮM! 😜</h2>
+                <h3>CỐ LÊN SẮP CÓ ĐÁP ÁN MẬT THƯ RỒI</h3>
+                <p>Nhấn Space hoặc chạm màn hình để chơi lại</p>
+            </div>
+
+            <div id="clue-overlay" class="hidden">
+                <div id="clue-box">
+                    <h2 id="clue-title">🔑 ĐÃ TÌM THẤY MANH MỐI!</h2>
+                    <img id="clue-img" src="" alt="Manh mối" class="hidden" style="max-width: 100%; max-height: 150px; border-radius: 6px; margin: 10px 0; object-fit: contain;">
+                    <p id="clue-text">Nội dung manh mối...</p>
+                    <button id="clue-btn">Tiếp tục hành trình</button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Nạp script -->
+    <script src="js/Player.js"></script>
+    <script src="js/Obstacle.js"></script>
+    <script src="js/GameManager.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

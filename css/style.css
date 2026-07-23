@@ -116,10 +116,18 @@ canvas {
     position: absolute; 
     top: 12px; 
     right: 15px; 
-    font-size: clamp(16px, 3.5vw, 22px); 
+    font-size: clamp(16px, 3.5vw, 30px); 
     font-weight: bold; 
     color: #ffffff; 
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+    text-shadow: 
+    0 2px 4px rgb(255, 0, 0),
+    2px 0 4px rgba(255, 0, 0),
+    0 -2px 4px rgba(255, 0, 0),
+    -2px 0 4px rgba(255, 0, 0),
+    2px 2px 4px rgba(255, 0, 0),
+    -2px -2px 4px rgba(255, 0, 0),
+    2px -2px 4px rgba(255, 0, 0),
+    -2px 2px 4px rgba(255, 0, 0);
     z-index: 5;
 }
 

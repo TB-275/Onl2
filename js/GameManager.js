@@ -31,7 +31,10 @@ class GameManager {
         this.isGameOver = false;
         this.isPaused = false;
         
-        // --- DANH SÁCH MANH MỐI (Đã linh hoạt hỗ trợ cả Ảnh & Chữ/Base64) ---
+        // Kỷ lục điểm số
+        this.highScore = parseInt(localStorage.getItem('matThuHighScore')) || 0;
+        
+        // --- DANH SÁCH MANH MỐI ---
         this.clues = {
             100: "MzUgTMOgIGNvbiBnw6w/",
             200: "TmjDs20gbcOhdSBuw6BvIMSRxrDhu6NjIGfhu41pIGzDoCAibmjDs20gbcOhdSBjaHV5w6puIGNobyIgdsOsIGPDsyB0aOG7gyB0cnV54buBbiBjaG8gaOG6p3UgaOG6v3QgY8OhYyBuaMOzbSBtw6F1IGtow6FjPw==",
@@ -39,7 +42,7 @@ class GameManager {
             400: "TuG7kXQgbmjhuqFjIExhIHRyb25nIGjhu4cgdGjhu5FuZyBrw70gaGnhu4d1IMOibSBuaOG6oWMgcXXhu5FjIHThur8gKEEsIEIsIEMsIEQsIEUsIEYsIEcpIHTGsMahbmcg4bupbmcgduG7m2kgY2jhu68gY8OhaSBuw6BvPw==",
             500: "VHJvbmcgY8OhYyBjw7RuZyB0aOG7qWMgVuG6rXQgbMO9IHTDrW5oIGNodXnhu4NuIMSR4buZbmcsIGNo4buvIGPDoWkgbsOgbyDEkcaw4bujYyBkw7luZyBsw6BtIGvDvSBoaeG7h3UgY2h14bqpbiBjaG8gVuG6rXQgdOG7kWM/",
             600: "Q0jDiCBDSFXhu5BJID0gPw==",
-            700: { type: 'image', src: "img/H.png" }, // Khuyên dùng dạng object cho ảnh
+            700: { type: 'image', src: "img/H.png" },
             800: "Học ăn học nói học gói học mở",
             900: "Chớ thấy sóng cả mà ngã tay chèo",
             1000: "Học thầy không tày học bạn",
@@ -51,14 +54,31 @@ class GameManager {
         };
         this.unlockedClues = new Set();
         
-        // --- DOM ELEMENTS (Đã đưa clueImgEl vào đúng trong Constructor) ---
+        // --- DOM ELEMENTS ---
         this.scoreEl = document.getElementById('score');
+        this.highScoreEl = document.getElementById('high-score');
         this.gameOverEl = document.getElementById('game-over');
         this.clueOverlayEl = document.getElementById('clue-overlay');
         this.clueTextEl = document.getElementById('clue-text');
-        this.clueImgEl = document.getElementById('clue-img'); // <-- ĐƯA VÀO ĐÂY
+        this.clueImgEl = document.getElementById('clue-img');
         
+        this.updateHighScoreUI();
         this.scheduleNextSpawn();
+    }
+
+    updateHighScoreUI() {
+        if (this.highScoreEl) {
+            this.highScoreEl.innerText = this.highScore;
+        }
+    }
+
+    checkHighScore() {
+        let currentScore = Math.floor(this.score);
+        if (currentScore > this.highScore) {
+            this.highScore = currentScore;
+            localStorage.setItem('matThuHighScore', this.highScore);
+            this.updateHighScoreUI();
+        }
     }
 
     scheduleNextSpawn() {
@@ -119,7 +139,6 @@ class GameManager {
         let imgSrc = '';
         let textContent = '';
 
-        // 1. Kiểm tra nếu là Object { type: 'image', src: '...' }
         if (typeof clue === 'object' && clue !== null) {
             if (clue.type === 'image') {
                 isImage = true;
@@ -127,10 +146,7 @@ class GameManager {
             } else {
                 textContent = clue.content || '';
             }
-        } 
-        // 2. Kiểm tra nếu là Chuỗi (String)
-        else if (typeof clue === 'string') {
-            // Tự động phát hiện nếu chuỗi là đuôi ảnh (.png, .jpg...) hoặc bắt đầu bằng img/
+        } else if (typeof clue === 'string') {
             if (clue.match(/\.(jpeg|jpg|gif|png|webp|svg)$/i) || clue.startsWith('img/') || clue.startsWith('../')) {
                 isImage = true;
                 imgSrc = clue;
@@ -139,7 +155,6 @@ class GameManager {
             }
         }
 
-        // --- HIỂN THỊ LÊN MAN HÌNH ---
         if (isImage) {
             if (this.clueImgEl) {
                 this.clueImgEl.src = imgSrc;
@@ -149,7 +164,6 @@ class GameManager {
                 this.clueTextEl.classList.add('hidden');
             }
         } else {
-            // Nếu là chữ thì tiến hành giải mã Base64
             textContent = decodeQuestion(textContent);
 
             if (this.clueTextEl) {
@@ -169,7 +183,7 @@ class GameManager {
     resumeGame() {
         if (!this.isPaused) return;
         this.isPaused = false;
-        this.clueOverlayEl.classList.add('hidden');
+        if (this.clueOverlayEl) this.clueOverlayEl.classList.add('hidden');
         this.update();
     }
 
@@ -181,8 +195,8 @@ class GameManager {
         this.isGameOver = false;
         this.isPaused = false;
         this.unlockedClues.clear();
-        this.gameOverEl.classList.add('hidden');
-        this.clueOverlayEl.classList.add('hidden');
+        if (this.gameOverEl) this.gameOverEl.classList.add('hidden');
+        if (this.clueOverlayEl) this.clueOverlayEl.classList.add('hidden');
         this.scheduleNextSpawn();
     }
 
@@ -203,8 +217,10 @@ class GameManager {
 
             if (this.checkCollision(obs)) {
                 this.isGameOver = true;
-                this.gameOverEl.classList.remove('hidden');
+                if (this.gameOverEl) this.gameOverEl.classList.remove('hidden');
                 
+                this.checkHighScore(); // Lưu kỷ lục ngay khi chạm vật cản
+
                 if (this.sounds && this.sounds.die) {
                     this.sounds.die.currentTime = 0;
                     this.sounds.die.play().catch(() => {});
@@ -223,65 +239,9 @@ class GameManager {
             this.scoreEl.innerText = `Điểm: ${Math.floor(this.score)}`;
         }
         
+        this.checkHighScore(); // Kiểm tra và cập nhật kỷ lục liên tục
         this.checkClues();
 
         requestAnimationFrame(() => this.update());
     }
 }
-function handleTouchStart(e) {
-    // Không chặn sự kiện nếu người dùng bấm vào các nút (button)
-    if (e.target.tagName === 'BUTTON') return;
-
-    // Ngăn điện thoại cuộn trang hoặc phóng to khi đang chơi
-    if (e.cancelable) e.preventDefault();
-
-    // 1. Kích hoạt âm thanh cho điện thoại ở lần chạm đầu tiên
-    if (gameManager.sounds) {
-        Object.values(gameManager.sounds).forEach(sound => {
-            if (sound && sound.paused) {
-                sound.play().then(() => sound.pause()).catch(() => {});
-            }
-        });
-    }
-
-    // 2. Xử lý trạng thái Game
-    if (gameManager.isGameOver) {
-        // Nếu Game Over -> Chơi lại
-        gameManager.reset();
-        gameManager.update();
-    } else if (gameManager.isPaused) {
-        // Nếu đang hiện Popup Manh Mối -> Tiếp tục
-        gameManager.resumeGame();
-    } else {
-        // Trong trận đấu -> Cho nhân vật Nhảy
-        if (gameManager.player && typeof gameManager.player.jump === 'function') {
-            gameManager.player.jump();
-        }
-    }
-}
-
-// Bắt sự kiện chạm màn hình
-window.addEventListener('touchstart', handleTouchStart, { passive: false });
-// Chống F12 & Chuột phải
-document.addEventListener('contextmenu', e => e.preventDefault());
-
-document.addEventListener('keydown', function(e) {
-    if (
-        e.key === "F12" || 
-        (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) ||
-        (e.ctrlKey && (e.key === 'U' || e.key === 'u' || e.key === 'S' || e.key === 's'))
-    ) {
-        e.preventDefault();
-        e.stopPropagation();
-        return false;
-    }
-});
-
-setInterval(function() {
-    const startTime = performance.now();
-    (function() {}.constructor("debugger")());
-    const endTime = performance.now();
-    if (endTime - startTime > 100) {
-        window.location.reload(); 
-    }
-}, 500);

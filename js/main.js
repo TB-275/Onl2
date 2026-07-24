@@ -1,20 +1,5 @@
-let highScore = localStorage.getItem('matThuHighScore') || 0;
-document.getElementById('high-score').innerText = highScore;
-let currentScore = Math.floor(this.score); 
+let gameManager = null; // Khai báo toàn cục để handleTouchStart truy cập an toàn
 
-if (currentScore > highScore) {
-    highScore = currentScore;
-    localStorage.setItem('matThuHighScore', highScore);
-    document.getElementById('high-score').innerText = highScore;
-}
-const clueBtn = document.getElementById('clue-btn');
-if (clueBtn) {
-    clueBtn.addEventListener('click', () => gameManager.resumeGame());
-    clueBtn.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        gameManager.resumeGame();
-    });
-}
 document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('gameCanvas');
 
@@ -34,82 +19,133 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const images = {};
     const sounds = {};
-    let assetsLoaded = 0;
-    const totalAssets = Object.keys(imageUrls).length + Object.keys(soundUrls).length;
+    let isGameInitialized = false;
 
-    const checkAllLoaded = () => {
-        assetsLoaded++;
-        if (assetsLoaded === totalAssets) {
+    let imagesLoaded = 0;
+    const totalImages = Object.keys(imageUrls).length;
+
+    const checkInit = () => {
+        if (!isGameInitialized) {
+            isGameInitialized = true;
             initGame(images, sounds);
         }
     };
 
+    // Preload Hình ảnh
     for (let key in imageUrls) {
         images[key] = new Image();
         images[key].src = imageUrls[key];
-        images[key].onload = checkAllLoaded;
-        images[key].onerror = checkAllLoaded; // Vẫn chạy game dù lỗi load ảnh
+        images[key].onload = () => {
+            imagesLoaded++;
+            if (imagesLoaded === totalImages) checkInit();
+        };
+        images[key].onerror = () => {
+            imagesLoaded++;
+            if (imagesLoaded === totalImages) checkInit();
+        };
     }
 
-    // Tải âm thanh
+    // Preload Âm thanh
     for (let key in soundUrls) {
         sounds[key] = new Audio(soundUrls[key]);
-        sounds[key].addEventListener('canplaythrough', checkAllLoaded, { once: true });
-        sounds[key].onerror = checkAllLoaded; // Vẫn chạy game dù thiếu file mp3
+        sounds[key].preload = 'auto';
     }
 
-    // 2. Khởi chạy Game Loop
+    // Thời gian chờ tối đa 1.2s đề phòng trình duyệt mobile chặn load audio
+    setTimeout(() => {
+        checkInit();
+    }, 1200);
+
     function initGame(loadedImages, loadedSounds) {
         const player = new Player(canvas, loadedImages, loadedSounds);
-        const gameManager = new GameManager(canvas, player, loadedImages, loadedSounds);
+        gameManager = new GameManager(canvas, player, loadedImages, loadedSounds);
 
-        // Xử lý Input chung (Phím hoặc Touch)
-        const handleAction = () => {
-            // NẾU POPUP MANH MỐI ĐANG MỞ -> NÚT NHẢY SẼ ĐÓNG POPUP
-            if (gameManager.isPaused) {
-                gameManager.resumeGame();
-                return;
-            }
-
-            // NẾU GAME OVER -> CHƠI LẠI
-            if (gameManager.isGameOver) {
-                gameManager.reset();
-                gameManager.update();
-            } 
-            // NẾU ĐANG CHƠI -> NHẢY
-            else {
-                player.jump();
-            }
-        };
-
-        // Bắt phím Space hoặc ArrowUp trên PC
+        // Bắt phím Space / Mũi tên lên trên PC
         window.addEventListener('keydown', (e) => {
             if (e.code === 'Space' || e.code === 'ArrowUp') {
                 e.preventDefault();
-                handleAction();
+                handleUserAction();
             }
         });
 
-        // Bắt thao tác chạm trên Mobile (chạm vào canvas)
-        canvas.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            handleAction();
-        }, { passive: false });
-
-        // Tắt popup khi bấm vào nút "Tiếp tục hành trình"
-        document.getElementById('clue-btn').addEventListener('click', () => {
-            gameManager.resumeGame();
-        });
-
-        // TẮT POPUP KHI BẤM RA KHỎI VÙNG (Bấm vào vùng nền tối #clue-overlay)
-        document.getElementById('clue-overlay').addEventListener('click', (e) => {
-            // Chỉ đóng khi click chuột chính xác vào vùng overlay (không phải click vào hộp nội dung bên trong)
-            if (e.target.id === 'clue-overlay') {
+        // Bấm nút "Tiếp tục" trong Popup Manh Mối
+        const clueBtn = document.getElementById('clue-btn');
+        if (clueBtn) {
+            clueBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
                 gameManager.resumeGame();
-            }
-        });
+            });
+        }
 
-        // Bắt đầu game
+        // Bấm ra nền tối để đóng Popup
+        const clueOverlay = document.getElementById('clue-overlay');
+        if (clueOverlay) {
+            clueOverlay.addEventListener('click', (e) => {
+                if (e.target.id === 'clue-overlay') {
+                    gameManager.resumeGame();
+                }
+            });
+        }
+
+        // Chạy game
         gameManager.update();
     }
 });
+
+// --- XỬ LÝ HÀNH ĐỘNG CHUNG (PC & Mobile) ---
+function handleUserAction() {
+    if (!gameManager) return;
+
+    // Mở khóa âm thanh trên điện thoại ở lần bấm/chạm đầu tiên
+    if (gameManager.sounds) {
+        Object.values(gameManager.sounds).forEach(sound => {
+            if (sound && sound.paused) {
+                sound.play().then(() => sound.pause()).catch(() => {});
+            }
+        });
+    }
+
+    if (gameManager.isGameOver) {
+        gameManager.reset();
+        gameManager.update();
+    } else if (gameManager.isPaused) {
+        gameManager.resumeGame();
+    } else {
+        if (gameManager.player && typeof gameManager.player.jump === 'function') {
+            gameManager.player.jump();
+        }
+    }
+}
+
+// --- CẢM ỨNG CHẠM MÀN HÌNH DI ĐỘNG ---
+function handleTouchStart(e) {
+    if (e.target.tagName === 'BUTTON') return;
+    if (e.cancelable) e.preventDefault();
+    handleUserAction();
+}
+
+window.addEventListener('touchstart', handleTouchStart, { passive: false });
+
+// --- BẢO VỆ CHỐNG F12 & CHUỘT PHẢI & DEBUGGER ---
+document.addEventListener('contextmenu', e => e.preventDefault());
+
+document.addEventListener('keydown', function(e) {
+    if (
+        e.key === "F12" || 
+        (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) ||
+        (e.ctrlKey && (e.key === 'U' || e.key === 'u' || e.key === 'S' || e.key === 's'))
+    ) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+    }
+});
+
+setInterval(function() {
+    const startTime = performance.now();
+    (function() {}.constructor("debugger")());
+    const endTime = performance.now();
+    if (endTime - startTime > 100) {
+        window.location.reload(); 
+    }
+}, 500);

@@ -228,7 +228,40 @@ class GameManager {
         requestAnimationFrame(() => this.update());
     }
 }
+function handleTouchStart(e) {
+    // Không chặn sự kiện nếu người dùng bấm vào các nút (button)
+    if (e.target.tagName === 'BUTTON') return;
 
+    // Ngăn điện thoại cuộn trang hoặc phóng to khi đang chơi
+    if (e.cancelable) e.preventDefault();
+
+    // 1. Kích hoạt âm thanh cho điện thoại ở lần chạm đầu tiên
+    if (gameManager.sounds) {
+        Object.values(gameManager.sounds).forEach(sound => {
+            if (sound && sound.paused) {
+                sound.play().then(() => sound.pause()).catch(() => {});
+            }
+        });
+    }
+
+    // 2. Xử lý trạng thái Game
+    if (gameManager.isGameOver) {
+        // Nếu Game Over -> Chơi lại
+        gameManager.reset();
+        gameManager.update();
+    } else if (gameManager.isPaused) {
+        // Nếu đang hiện Popup Manh Mối -> Tiếp tục
+        gameManager.resumeGame();
+    } else {
+        // Trong trận đấu -> Cho nhân vật Nhảy
+        if (gameManager.player && typeof gameManager.player.jump === 'function') {
+            gameManager.player.jump();
+        }
+    }
+}
+
+// Bắt sự kiện chạm màn hình
+window.addEventListener('touchstart', handleTouchStart, { passive: false });
 // Chống F12 & Chuột phải
 document.addEventListener('contextmenu', e => e.preventDefault());
 

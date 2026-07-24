@@ -7,6 +7,14 @@ if (currentScore > highScore) {
     localStorage.setItem('matThuHighScore', highScore);
     document.getElementById('high-score').innerText = highScore;
 }
+const clueBtn = document.getElementById('clue-btn');
+if (clueBtn) {
+    clueBtn.addEventListener('click', () => gameManager.resumeGame());
+    clueBtn.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        gameManager.resumeGame();
+    });
+}
 document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('gameCanvas');
 

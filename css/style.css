@@ -9,7 +9,7 @@
 
 /* Chống phóng to khi chạm đúp và tối ưu chạm trên điện thoại */
 html, body, #game-container, canvas {
-    touch-action: none; /* Chặn cuộn/phóng to trang khi thao tác game */
+    touch-action: none;
     -webkit-user-select: none;
     user-select: none;
     -webkit-touch-callout: none;
@@ -39,14 +39,13 @@ body {
     width: 100%;
     max-width: 800px;
     margin: auto;
-    padding-top: 10px;
 }
 
 /* --- 2. BANNER TRÊN CÙNG --- */
 .banner-container {
     width: 100%;
     line-height: 0;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
@@ -67,7 +66,7 @@ body {
     flex-direction: column;
     align-items: center;
     gap: 8px;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
 }
 
 .game-title {
@@ -81,7 +80,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     width: 100%;
 }
 
@@ -89,29 +88,13 @@ body {
     font-size: clamp(0.75rem, 2.5vw, 0.9rem);
     background: rgba(0, 0, 0, 0.75);
     color: #ffffff;
-    padding: 6px 14px;
+    padding: 6px 12px;
     border-radius: 15px;
     border: 1px solid rgba(255, 255, 255, 0.2);
     white-space: nowrap;
 }
 
-/* SỬA LỖI: XẾP DỌC CÁC ITEM THÔNG TIN TRÊN ĐIỆN THOẠI */
-@media (max-width: 768px) {
-    .header-info {
-        flex-direction: column; /* Chuyển sang xếp dọc */
-        gap: 6px;
-        width: 100%;
-    }
-
-    .info-item {
-        width: 100%;
-        max-width: 320px;
-        text-align: center;
-        white-space: normal; /* Cho phép xuống dòng nếu chữ dài */
-    }
-}
-
-/* --- 4. KHUNG GAME CHÍNH --- */
+/* --- 4. KHUNG GAME CHÍNH (TO & ĐẸP TRÊN ĐIỆN THOẠI) --- */
 #game-container { 
     position: relative; 
     width: 100%; 
@@ -132,9 +115,9 @@ canvas {
 
 #score { 
     position: absolute; 
-    top: 12px; 
-    right: 15px; 
-    font-size: clamp(16px, 3.5vw, 26px); 
+    top: 10px; 
+    right: 12px; 
+    font-size: clamp(16px, 3.5vw, 24px); 
     font-weight: bold; 
     color: #ffffff; 
     text-shadow: 
@@ -147,36 +130,97 @@ canvas {
 
 .hidden { display: none !important; }
 
-/* OVERLAY MODAL */
-#game-over, #clue-modal {
-    position: absolute; 
+/* --- 5. POPUP GAME OVER & MANH MỐI (NỔI GIỮA MÀN HÌNH ĐIỆN THOẠI) --- */
+#game-over {
+    position: fixed; /* Phủ lên giữa toàn bộ màn hình thiết bị */
     top: 50%; left: 50%; 
     transform: translate(-50%, -50%);
     text-align: center; 
-    background: rgba(255, 255, 255, 0.98);
-    padding: 20px; 
-    border: 2px solid #535353; 
-    border-radius: 8px; 
-    z-index: 10;
-    width: 85%; 
+    background: #ffffff;
+    padding: 24px 18px; 
+    border: 3px solid #535353; 
+    border-radius: 12px; 
+    z-index: 1000;
+    width: 88%; 
     max-width: 380px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+#game-over h2 {
+    font-size: 1.2rem;
+    color: #e74c3c;
+    margin-bottom: 8px;
+}
+
+#game-over h3 {
+    font-size: 1rem;
+    color: #2c3e50;
+    margin-bottom: 6px;
+}
+
+#game-over p {
+    font-size: 0.85rem;
+    color: #7f8c8d;
 }
 
 #clue-overlay {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.6);
+    position: fixed; /* Phủ kín màn hình di động */
+    top: 0; left: 0; 
+    width: 100vw; height: 100vh;
+    background: rgba(0, 0, 0, 0.75);
     display: flex; justify-content: center; align-items: center;
-    z-index: 20;
+    z-index: 2000;
 }
 
 #clue-box {
-    background: #ffffff; padding: 20px; border: 3px solid #ffaa00;
-    border-radius: 8px; text-align: center; width: 85%; max-width: 400px;
-    box-shadow: 0 0 20px rgba(255, 170, 0, 0.6);
+    background: #ffffff; 
+    padding: 20px; 
+    border: 3px solid #ffaa00;
+    border-radius: 12px; 
+    text-align: center; 
+    width: 88%; 
+    max-width: 400px;
+    box-shadow: 0 0 25px rgba(255, 170, 0, 0.8);
 }
 
 #clue-btn { 
-    margin-top: 12px; padding: 8px 18px; font-size: 15px; cursor: pointer; 
-    border: none; background: #535353; color: white; border-radius: 4px; 
+    margin-top: 14px; 
+    padding: 10px 20px; 
+    font-size: 15px; 
+    font-weight: bold;
+    cursor: pointer; 
+    border: none; 
+    background: #e67e22; 
+    color: white; 
+    border-radius: 6px; 
 }
-#clue-btn:hover { background: #333; }
+
+/* --- TỐI ƯU RIÊNG CHO MÀN HÌNH ĐIỆN THOẠI (Mobile Responsive) --- */
+@media (max-width: 768px) {
+    body {
+        padding: 5px; /* Giảm lề ngoài để tăng khoảng không chơi game */
+    }
+
+    #game-header {
+        gap: 5px;
+        margin-bottom: 8px;
+    }
+
+    .header-info {
+        flex-direction: column; /* Xếp dọc các dòng thông tin */
+        gap: 5px;
+    }
+
+    .info-item {
+        width: 100%;
+        text-align: center;
+        font-size: 0.8rem;
+        padding: 5px 10px;
+    }
+
+    /* TĂNG ĐỘ CAO KHUNG GAME TRÊN MOBILE */
+    canvas {
+        min-height: 180px; /* Ép khung game cao tối thiểu 180px giúp góc nhìn thoáng hơn */
+        object-fit: fill;
+    }
+}

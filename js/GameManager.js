@@ -41,15 +41,14 @@ class GameManager {
             300: "VHJvbmcgQuG6o25nIHR14bqnbiBob8OgbiBjw6FjIG5ndXnDqm4gdOG7kSBow7NhIGjhu41jLCBrw70gaGnhu4d1IGPhu6dhIG5ndXnDqm4gdOG7kSBJLeG7kXQgbMOgIGfDrD8=",
             400: "TuG7kXQgbmjhuqFjIExhIHRyb25nIGjhu4cgdGjhu5FuZyBrw70gaGnhu4d1IMOibSBuaOG6oWMgcXXhu5FjIHThur8gKEEsIEIsIEMsIEQsIEUsIEYsIEcpIHTGsMahbmcg4bupbmcgduG7m2kgY2jhu68gY8OhaSBuw6BvPw==",
             500: "VHJvbmcgY8OhYyBjw7RuZyB0aOG7qWMgVuG6rXQgbMO9IHTDrW5oIGNodXnhu4NuIMSR4buZbmcsIGNo4buvIGPDoWkgbsOgbyDEkcaw4bujYyBkw7luZyBsw6BtIGvDvSBoaeG7h3UgY2h14bqpbiBjaG8gVuG6rXQgdOG7kWM/",
-            600: "Q0jDiCBDSFXhu5BJID0gPw==",
+            600: "Q0hV4buQSSBDSMOIICA9ID8=",
             700: { type: 'image', src: "img/H.png" },
-            800: "Học ăn học nói học gói học mở",
-            900: "Chớ thấy sóng cả mà ngã tay chèo",
-            1000: "Học thầy không tày học bạn",
-            1100: "Có chí thì nên",
-            1200: "Học thầy không tày học bạn",
-            1300: "Ăn quả nhớ kẻ trồng cây",
-            1400: "Có công mài sắt có ngày nên kim",
+            800: "TuG6v3UgSD1DIFbhuq15IFkgPT8=",
+            900: "VHLDqm4gbGEgYsOgbiB0aeG6v25nIEFuaCwgY2jhu68gY8OhaSBuw6BvIHTGsOG7o25nIHRyxrBuZyBjaG8gaMaw4bubbmcgQuG6r2MgKE5vcnRoKT8=",
+            1000: "xJDGoW4gduG7iyDEkW8gdOG6p24gc+G7kSB0cm9uZyBW4bqtdCBsw70gbMOgIEhlcnR6LiBDaOG7ryBjw6FpIMSR4bqndSB0acOqbiBj4bunYSDEkcahbiB24buLIG7DoHkgbMOgIGfDrD8=",
+            1100: "MzYgPSBYWFhWPw==",
+            1200: "VHJvbmcgcGjGsMahbmcgdHLDrG5oIHbhuq10IGzDvSBu4buVaSB0aeG6v25nIGPhu6dhIEFsYmVydCBFaW5zdGVpbiBFID0gbWNeMiwgY2jhu68gY8OhaSBuw6BvIMSR4bqhaSBkaeG7h24gY2hvIE7Eg25nIGzGsOG7o25nIChFbmVyZ3kpPw==",
+            1300: "Q2jhu68gY8OhaSDEkeG6p3UgdGnDqm4gdMOqbiB0aeG6v25nIGFuaCBj4bunYSBUaGnDqm4gVsawxqFuZyBUSW5oIChIw6BuaCB0aW5oIHRo4bupIDcgdHJvbmcgSOG7hyBN4bq3dCBUcuG7nWkpIGzDoCBnw6w/",
             1500: { type: 'image', src: "img/i.jpg" }
         };
         this.unlockedClues = new Set();
